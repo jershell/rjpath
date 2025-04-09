@@ -11,8 +11,9 @@ M2_BASE="$HOME/.m2/repository"
 # === STEP 1: Extract version and group from build.gradle.kts ===
 echo "🔍 Extracting version and group from $SRC_KTS_FILE..."
 
-VERSION=$(grep -oP 'version\s*=\s*"\K[0-9a-zA-Z\.-]+' "$SRC_KTS_FILE")
-GROUP=$(grep -oP 'group\s*=\s*"\K[0-9a-zA-Z\.\-]+' "$SRC_KTS_FILE")
+VERSION=$(sed -n 's/^[[:space:]]*version[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$SRC_KTS_FILE")
+GROUP=$(sed -n 's/^[[:space:]]*group[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$SRC_KTS_FILE")
+
 ZIP_NAME="$MODULE-$VERSION-bundle.zip"
 ZIP_OUTPUT="$BUILD_DIR/$ZIP_NAME"
 
@@ -21,7 +22,7 @@ if [[ -z "$VERSION" || -z "$GROUP" ]]; then
   exit 1
 fi
 
-GROUP_PATH="${GROUP//./\/}"  # convert com.github.jershell to com/github/jershell
+GROUP_PATH=$(echo "$GROUP" | sed 's/\./\//g')
 
 echo "📦 Version: $VERSION"
 echo "🏷️  Group: $GROUP"
@@ -62,7 +63,14 @@ done
 
 # === STEP 6: Create ZIP archive ===
 echo "📦 Packaging ZIP: $DIST_DIR to $ZIP_OUTPUT"
-ZIP_OUTPUT=$(realpath "$ZIP_OUTPUT")
+ZIP_DIR=$(cd "$(dirname "$ZIP_OUTPUT")" && pwd)
+ZIP_FILE=$(basename "$ZIP_OUTPUT")
+ZIP_OUTPUT="$ZIP_DIR/$ZIP_FILE"
+
+echo "📂 Dir: $ZIP_DIR"
+echo "📄 File: $ZIP_FILE"
+echo "🧩 Combined: $ZIP_OUTPUT"
+
 cd "$DIST_DIR"
 zip -r "$ZIP_OUTPUT" .
 cd - > /dev/null
