@@ -125,10 +125,6 @@ val allMatches = RJPath.selector("$.nonexistent.path")
     .getAll(jsonElement) // returns empty list if no matches
 ```
 
-## Performance
-
-RJPath is optimized for working with large JSON documents and provides efficient data processing. The internal path caching mechanism prevents repeated parsing of JSONPath expressions.
-
 ## Contributing
 
 We welcome contributions! If you'd like to help:
