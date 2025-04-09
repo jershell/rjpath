@@ -74,7 +74,10 @@ class FilterSelector(
             }.filter { expression.evaluate(it) }
             is JsonObject -> value.entries.map { (name, element) ->
                 Node(element, Location.Property(name, node.location))
-            }.filter { expression.evaluate(it) }
+            }.filter { 
+                // check only objects
+                it.value is JsonObject && expression.evaluate(it)
+            }
             is JsonPrimitive -> emptyList()
             is JsonNull -> emptyList()
             else -> emptyList()

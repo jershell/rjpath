@@ -16,7 +16,7 @@ RJPath is JSONPath implementation for Kotlin Multiplatform that allows you to ea
 
 ```kotlin
 dependencies {
-    implementation("com.github.jershell:rjpath:1.1.0")
+    implementation("com.github.jershell:rjpath:1.1.1")
 }
 ```
 
@@ -24,7 +24,7 @@ dependencies {
 
 ```groovy
 dependencies {
-    implementation 'com.github.jershell:rjpath:1.1.0'
+    implementation 'com.github.jershell:rjpath:1.1.1'
 }
 ```
 

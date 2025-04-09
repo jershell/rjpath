@@ -55,6 +55,38 @@ class JsonPathTest {
     private val test2Json = """
         {
           "store": {
+            "black": {
+                "type": "color",
+                "value": "#000000ff",
+                "blendMode": "normal"
+            },
+            "white": {
+                "type": "color",
+                "value": "#ffffffff",
+                "blendMode": "normal"
+            },
+            "special": {
+                "info": {
+                  "type": "color",
+                  "value": "#025be0ff",
+                  "blendMode": "normal"
+                },
+                "success": {
+                  "type": "color",
+                  "value": "#4c9919ff",
+                  "blendMode": "normal"
+                },
+                "warning": {
+                  "type": "color",
+                  "value": "#f9c03bff",
+                  "blendMode": "normal"
+                },
+                "danger": {
+                  "type": "color",
+                  "value": "#f8311fff",
+                  "blendMode": "normal"
+                }
+            },
             "book": [
               {
                 "category": "reference",
@@ -380,6 +412,46 @@ class JsonPathTest {
         assertEquals(2, results.size)
         assertTrue(results.any { it.path == "$.store.book[0].title" && (it.value as JsonPrimitive).content == "Sayings of the Century" })
         assertTrue(results.any { it.path == "$.store.book[2].title" && (it.value as JsonPrimitive).content == "Moby Dick" })
+    }
+
+    @Test
+    fun testGetAllWithPathFilterAndArray() {
+        val path = RJPath.selector("$.store.book[?(@.price < 10)]")
+        val results = path.getAllWithPath(element)
+
+        assertEquals(2, results.size)
+
+
+        assertTrue(results.any { it.path == "$.store.book[0]" && ((it.value as JsonObject)["title"] as JsonPrimitive).content == "Sayings of the Century" })
+        assertTrue(results.any { it.path == "$.store.book[2]" && ((it.value as JsonObject)["title"] as JsonPrimitive).content == "Moby Dick" })
+    }
+
+    @Test
+    fun testGetAllWithPathFilterAndObject() {
+        val path = RJPath.selector("$.store..[?(@.type == 'color')]")
+        val results = path.getAllWithPath(element2)
+
+        println(results)
+        assertEquals(6, results.size)
+        assertTrue(results.all {
+            it.value is JsonObject &&
+            it.value["type"] is JsonPrimitive &&
+            (it.value["type"] as JsonPrimitive).content == "color"
+        })
+    }
+
+    @Test
+    fun testGetAllWithPathFilterAndValue() {
+        val path = RJPath.selector("$.store..[?(@.value == 'color')]")
+        val results = path.getAllWithPath(element2)
+
+        println(results)
+        assertEquals(6, results.size)
+        assertTrue(results.all {
+            it.value is JsonObject &&
+                    it.value["type"] is JsonPrimitive &&
+                    (it.value["type"] as JsonPrimitive).content == "color"
+        })
     }
 
     @Test
